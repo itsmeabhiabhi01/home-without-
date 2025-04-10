@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+    <title>HAPPY TALK</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Orbitron:wght@400;700&display=swap" rel="stylesheet"/>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            transition: background 0.3s ease;
+            background: #004d4d;
+        }
+        .dark-mode { background: #1a1a1a; color: #fff; }
+        .light-mode { background: #f0f0f0; color: #000; }
+        .real-mode { background: #004d4d; color: #fff; }
+        
+        /* Navbar Styles */
+        .navbar {
+            width: 280px;
+            height: 100vh;
+            background: #1f282e;
+            padding: 20px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1001;
+            transition: all 0.3s ease;
+            overflow-y: auto;
+        }
+        .navbar.collapsed {
+            width: 80px;
+        }
+        .navbar.collapsed .nav-content {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .navbar.collapsed .nav-title {
+            display: block;
+            text-align: center;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+        }
+        .light-mode .navbar { background: #e0e0e0; color: #000; }
+        .dark-mode .navbar { background: #1a1a1a; }
+        .real-mode .navbar { background: #1f282e; }
+        
+        .nav-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1e90ff;
+            margin-bottom: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-button {
+            width: 100%;
+            padding: 12px 15px;
+            margin: 8px 0;
+            background: #1e90ff;
+            border: none;
+            border-radius: 8px;
+            text-align: left;
+            transition: all 0.3s ease;
+            color: #fff;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+        }
+        .nav-button i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        .nav-button:hover { 
+            background: #60a5fa;
+            transform: translateX(5px);
+        }
+        
+        .main-content {
+            margin-left: 280px;
+            width: calc(100% - 280px);
+            padding: 20px;
+            transition: all 0.3s ease;
+            min-height: 100vh;
+        }
+        .main-content.expanded {
+            margin-left: 80px;
+            width: calc(100% - 80px);
+        }
+        
+        /* Room Cards */
+        .room-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .room-card {
+            width: 100%;
+            min-height: 200px;
+            padding: 20px;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .dark-mode .room-card { 
+            background: #2a2a2a; 
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        .light-mode .room-card { 
+            background: #ffffff; 
+            color: #000;
+            border-color: rgba(0, 0, 0, 0.1);
+        }
+        .real-mode .room-card { 
+            background: #1f282e; 
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+        .room-card:hover { 
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+        
+        .room-title { 
+            color: #ffffff; 
+            font-size: 1.3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .light-mode .room-title { color: #000; }
+        
+        .room-info {
+            color: #aaa;
+            margin-bottom: 15px;
+        }
+        .light-mode .room-info { color: #555; }
+        
+        .people-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .profile-pic {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #1e90ff;
+        }
+        
+        /* Header Styles */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto 30px;
+            padding: 10px 0;
+        }
+        
+        .mode-toggle {
+            display: flex;
+            gap: 10px;
+            background: rgba(0, 0, 0, 0.1);
+            padding: 5px;
+            border-radius: 30px;
+        }
+        
+        .mode-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .dark-btn {
+            background: #1a1a1a;
+            color: white;
+        }
+        
+        .light-btn {
+            background: #f0f0f0;
+            color: #333;
+        }
+        
+        .real-btn {
+            background: #004d4d;
+            color: white;
+        }
+        
+        .active-mode {
+            box-shadow: 0 0 0 2px #1e90ff;
+        }
+        
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #1e90ff;
+        }
+        
+        /* Color Picker Styles */
+        .color-picker-container {
+            margin-top: 20px;
+        }
+        
+        .color-picker-label {
+            display: block;
+            color: #aaa;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+        
+        .color-preview {
+            width: 100%;
+            height: 30px;
+            border-radius: 5px;
+            margin-bottom: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Social Media Icons */
+        .social-icons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .social-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #2a2a2a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            transition: all 0.3s ease;
+        }
+        
+        .social-icon:hover {
+            transform: scale(1.1);
+        }
+        
+        .light-mode .social-icon {
+            background: #e0e0e0;
+            color: #333;
+        }
+    </style>
+</head>
+<body class="real-mode">
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="nav-title">HT</div>
+        <div class="nav-content">
+            <button class="nav-button"><i class="fas fa-home"></i> Home</button>
+            <button class="nav-button"><i class="fas fa-user"></i> Profile</button>
+            <button class="nav-button"><i class="fas fa-comments"></i> Rooms</button>
+            <button class="nav-button"><i class="fas fa-cog"></i> Settings</button>
+            
+            <div class="mt-8">
+                <p class="text-white mb-3 text-sm uppercase tracking-wider">Social Media</p>
+                <div class="social-icons">
+                    <a href="https://discord.gg/bmfp2bmN" target="_blank" class="social-icon" title="Discord"><i class="fab fa-discord"></i></a>
+                    <a href="https://twitter.com" target="_blank" class="social-icon" title="Twitter"><i class="fab fa-twitter"></i></a>
+                    <a href="https://facebook.com" target="_blank" class="social-icon" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a href="https://instagram.com" target="_blank" class="social-icon" title="Instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="https://youtube.com" target="_blank" class="social-icon" title="YouTube"><i class="fab fa-youtube"></i></a>
+                    <a href="https://twitch.tv" target="_blank" class="social-icon" title="Twitch"><i class="fab fa-twitch"></i></a>
+                    <a href="https://reddit.com" target="_blank" class="social-icon" title="Reddit"><i class="fab fa-reddit-alien"></i></a>
+                    <a href="https://tiktok.com" target="_blank" class="social-icon" title="TikTok"><i class="fab fa-tiktok"></i></a>
+                </div>
+            </div>
+            
+            <div class="color-picker-container mt-8">
+                <p class="text-white mb-3 text-sm uppercase tracking-wider">Theme Options</p>
+                <div class="color-preview" id="current-color"></div>
+                <button class="nav-button" id="color-picker-btn"><i class="fas fa-paint-brush"></i> Custom Color</button>
+                <input type="color" id="color-picker" style="display: none;">
+            </div>
+        </div>
+        <button id="toggle-navbar" class="absolute bottom-5 left-5 text-white text-xl"><i class="fas fa-chevron-left"></i></button>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <div class="header">
+            <div class="flex items-center space-x-2">
+                <img alt="Network icon" class="w-8 h-8" src="https://storage.googleapis.com/a1aa/image/fLztLCzaM637SaUphiDzOCj14brykBFanIxefgS0tWenxfFgC.jpg"/>
+                <span class="text-xl font-bold">HAPPY TALK</span>
+            </div>
+            <div class="flex items-center space-x-4">
+                <div class="mode-toggle">
+                    <button class="mode-btn dark-btn" id="dark-mode-btn"><i class="fas fa-moon"></i></button>
+                    <button class="mode-btn light-btn" id="light-mode-btn"><i class="fas fa-sun"></i></button>
+                    <button class="mode-btn real-btn active-mode" id="real-mode-btn"><i class="fas fa-palette"></i></button>
+                </div>
+                <div class="user-profile">
+                    <img alt="Profile" class="user-avatar" src="https://storage.googleapis.com/a1aa/image/uL6NbO7ule3yAaG0CpQKIilAue8eTYNquHR1ozsJXRzA5fCQB.jpg"/>
+                    <span class="username">User123</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Rooms Grid -->
+        <div class="room-container">
+            <!-- Room 1 -->
+            <div class="room-card">
+                <div>
+                    <h3 class="room-title">English Conversation</h3>
+                    <p class="room-info">English | 5/10 users</p>
+                    <p>Practice your English with native speakers and learners from around the world.</p>
+                </div>
+                <div class="people-row">
+                    <img class="profile-pic" src="https://randomuser.me/api/portraits/women/44.jpg"/>
+                    <img class="profile-pic" src="https://randomuser.me/api/portraits/men/32.jpg"/>
+                    <img class="profile-pic" src="https://randomuser.me/api/portraits/women/68.jpg"/>
+                </div>
+            </div>
+            
+            <!-- Room 2 -->
+            <div class="room-card">
+                <div>
+                    <h3 class="room-title">Spanish Practice</h3>
+                    <p class="room-info">Spanish | 3/8 users</p>
+                    <p>Improve your Spanish skills in a friendly environment with other learners.</p>
+                </div>
+                <div class="people-row">
+                    <img class="profile-pic" src="https://randomuser.me/api/portraits/men/75.jpg"/>
+                    <img class="profile-pic" src="https://randomuser.me/api/portraits/women/63.jpg"/>
+                </div>
+            </div>
+            
+            <!-- Room 3 -->
+            <div class="room-card">
+                <div>
+                    <h3 class="room-title">French Chat</h3>
+                    <p class="room-info">French | 4/12 users</p>
+                    <p>Parlez français avec des locuteurs natifs et d'autres apprenants.</p>
+                </div>
+                <div class="people-row">
+                    <img class="profile-pic" src="https://randomuser.me/api/portraits/women/33.jpg"/>
+                    <img class="profile-pic" src="https://randomuser.me/api/portraits/men/22.jpg"/>
+                </div>
+            </div>
+            
+            <!-- Room 4 -->
+            <div class="room-card">
+                <div>
+                    <h3 class="room-title">German Speakers</h3>
+                    <p class="room-info">German | 6/10 users</p>
+                    <p>Sprechen Sie Deutsch? Join our German language practice room.</p>
+                </div>
+                <div class="people-row">
+                    <img class="profile-pic" src="https://randomuser.me/api/portraits/men/45.jpg"/>
+                    <img class="profile-pic" src="https://randomuser.me/api/portraits/women/28.jpg"/>
+                    <img class="profile-pic" src="https://randomuser.me/api/portraits/men/67.jpg"/>
+                </div>
+            </div>
+            
+            <!-- Room 5 -->
+            <div class="room-card">
+                <div>
+                    <h3 class="room-title">Italian Practice</h3>
+                    <p class="room-info">Italian | 2/15 users</p>
+                    <p>Practice Italian with native speakers and language enthusiasts.</p>
+                </div>
+                <div class="people-row">
+                    <img class="profile-pic" src="https://randomuser.me/api/portraits/women/55.jpg"/>
+                </div>
+            </div>
+            
+            <!-- Room 6 -->
+            <div class="room-card">
+                <div>
+                    <h3 class="room-title">Japanese Exchange</h3>
+                    <p class="room-info">Japanese | 7/10 users</p>
+                    <p>日本語を練習しましょう！Practice Japanese with native speakers.</p>
+                </div>
+                <div class="people-row">
+                    <img class="profile-pic" src="https://randomuser.me/api/portraits/women/77.jpg"/>
+                    <img class="profile-pic" src="https://randomuser.me/api/portraits/men/88.jpg"/>
+                    <img class="profile-pic" src="https://randomuser.me/api/portraits/women/29.jpg"/>
+                </div>
+            </div>
+            
+            <!-- Room 7 -->
+            <div class="room-card">
+                <div>
+                    <h3 class="room-title">Chinese Mandarin</h3>
+                    <p class="room-info">Chinese | 4/8 users</p>
+                    <p>练习中文 with native Mandarin speakers and other learners.</p>
+                </div>
+                <div class="people-row">
+                    <img class="profile-pic" src="https://randomuser.me/api/portraits/men/11.jpg"/>
+                    <img class="profile-pic" src="https://randomuser.me/api/portraits/women/22.jpg"/>
+                </div>
+            </div>
+            
+            <!-- Room 8 -->
+            <div class="room-card">
+                <div>
+                    <h3 class="room-title">Korean Hangul</h3>
+                    <p class="room-info">Korean | 5/12 users</p>
+                    <p>한국어를 연습합시다! Practice Korean with friendly speakers.</p>
+                </div>
+                <div class="people-row">
+                    <img class="profile-pic" src="https://randomuser.me/api/portraits/women/66.jpg"/>
+                    <img class="profile-pic" src="https://randomuser.me/api/portraits/men/77.jpg"/>
+                </div>
+            </div>
+            
+            <!-- Room 9 -->
+            <div class="room-card">
+                <div>
+                    <h3 class="room-title">Russian Practice</h3>
+                    <p class="room-info">Russian | 3/10 users</p>
+                    <p>Практикуйте русский язык с носителями языка.</p>
+                </div>
+                <div class="people-row">
+                    <img class="profile-pic" src="https://randomuser.me/api/portraits/men/99.jpg"/>
+                    <img class="profile-pic" src="https://randomuser.me/api/portraits/women/88.jpg"/>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Navbar Toggle
+        const toggleNavbar = document.getElementById('toggle-navbar');
+        const navbar = document.querySelector('.navbar');
+        const mainContent = document.querySelector('.main-content');
+        
+        toggleNavbar.addEventListener('click', () => {
+            navbar.classList.toggle('collapsed');
+            mainContent.classList.toggle('expanded');
+            
+            if (navbar.classList.contains('collapsed')) {
+                toggleNavbar.innerHTML = '<i class="fas fa-chevron-right"></i>';
+                toggleNavbar.style.left = '20px';
+            } else {
+                toggleNavbar.innerHTML = '<i class="fas fa-chevron-left"></i>';
+                toggleNavbar.style.left = '5px';
+            }
+        });
+        
+        // Theme Switching
+        const darkModeBtn = document.getElementById('dark-mode-btn');
+        const lightModeBtn = document.getElementById('light-mode-btn');
+        const realModeBtn = document.getElementById('real-mode-btn');
+        const modeButtons = [darkModeBtn, lightModeBtn, realModeBtn];
+        
+        function setActiveMode(activeBtn) {
+            modeButtons.forEach(btn => {
+                btn.classList.remove('active-mode');
+            });
+            activeBtn.classList.add('active-mode');
+        }
+        
+        darkModeBtn.addEventListener('click', () => {
+            document.body.classList.remove('light-mode', 'real-mode');
+            document.body.classList.add('dark-mode');
+            setActiveMode(darkModeBtn);
+        });
+        
+        lightModeBtn.addEventListener('click', () => {
+            document.body.classList.remove('dark-mode', 'real-mode');
+            document.body.classList.add('light-mode');
+            setActiveMode(lightModeBtn);
+        });
+        
+        realModeBtn.addEventListener('click', () => {
+            document.body.classList.remove('dark-mode', 'light-mode');
+            document.body.classList.add('real-mode');
+            setActiveMode(realModeBtn);
+        });
+        
+        // Color Picker
+        const colorPickerBtn = document.getElementById('color-picker-btn');
+        const colorPicker = document.getElementById('color-picker');
+        const currentColorDisplay = document.getElementById('current-color');
+        
+        // Set initial color display
+        currentColorDisplay.style.background = '#004d4d';
+        
+        colorPickerBtn.addEventListener('click', () => {
+            colorPicker.click();
+        });
+        
+        colorPicker.addEventListener('input', (e) => {
+            const selectedColor = e.target.value;
+            document.body.style.background = selectedColor;
+            currentColorDisplay.style.background = selectedColor;
+            document.body.classList.remove('dark-mode', 'light-mode', 'real-mode');
+            
+            // Remove active mode from all buttons
+            modeButtons.forEach(btn => {
+                btn.classList.remove('active-mode');
+            });
+        });
+    </script>
+</body>
+</html>
